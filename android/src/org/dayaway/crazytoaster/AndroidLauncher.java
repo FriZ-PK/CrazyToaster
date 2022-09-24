@@ -1,6 +1,7 @@
 package org.dayaway.crazytoaster;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.badlogic.gdx.backends.android.AndroidAudio;
+import com.badlogic.gdx.backends.android.AsynchronousAndroidAudio;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -213,5 +216,10 @@ public class AndroidLauncher extends AndroidApplication implements ActionAd {
 			});
 		} catch (Exception e) {
 		}
+	}
+
+	@Override
+	public AndroidAudio createAudio(Context context, AndroidApplicationConfiguration config) {
+		return new AsynchronousAndroidAudio(context, config);
 	}
 }

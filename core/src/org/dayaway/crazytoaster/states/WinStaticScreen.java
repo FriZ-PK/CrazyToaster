@@ -14,12 +14,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
 import org.dayaway.crazytoaster.CrazyToaster;
-import org.dayaway.crazytoaster.sprites.Floor;
 import org.dayaway.crazytoaster.sprites.animation.Animation;
-import org.dayaway.crazytoaster.sprites.animation.ToasterAnimationManager;
 import org.dayaway.crazytoaster.sprites.level.LevelManager;
 
-public class EndScreen {
+public class WinStaticScreen {
 
     private final PlayState playState;
     private final Camera camera;
@@ -38,11 +36,11 @@ public class EndScreen {
     private final Rectangle sound_button;
     private final Rectangle mosPos = new Rectangle(0,0,1,1);
 
-    private Animation toasterAnim = new Animation(new TextureRegion(CrazyToaster.textures.exploded_toaster),
-            4, 0.5f);
+    private Animation toasterAnim = new Animation(new TextureRegion(CrazyToaster.textures.winner_toaster),
+            8, 0.5f);
 
 
-    public EndScreen(PlayState playState) {
+    public WinStaticScreen(PlayState playState) {
         this.playState = playState;
         this.camera = playState.getCamera();
         this.gsm = playState.getGSM();
@@ -68,7 +66,8 @@ public class EndScreen {
                 if(gsm.isSoundOn()) {
                     CrazyToaster.textures.button_sound.play();
                 }
-                playState.RETURN_GAME();
+                gsm.turnFirstScreen();
+                playState.getGSM().push(new LevelCollectionState(playState.getGSM()));
             }
             if(rectRewardAd.overlaps(mosPos)) {
                 if(gsm.isSoundOn()) {
@@ -106,9 +105,10 @@ public class EndScreen {
                 camera.position.y + 96 + CrazyToaster.textures.floor_three.getRegionHeight() - 20);
 
         glyphLayout.setText(bitmapFontScore, String.valueOf(playState.getSCORE()));
-        //Рисует очки
-        bitmapFontScore.draw(batch, String.valueOf(playState.getSCORE()), camera.position.x - glyphLayout.width / 2f,
-                camera.unproject(new Vector3(0, 0, 0)).y - 32);
+
+        //Рисует WINNER
+        bitmapFontScore.draw(batch, "WINNER", 0,camera.unproject(new Vector3(0, 0, 0)).y - 32,
+                CrazyToaster.WIDTH, Align.center,true);
 
         sound_button.setPosition(0, camera.unproject(new Vector3(0, 0, 0)).y - CrazyToaster.textures.sound_on.getRegionHeight());
         batch.draw(gsm.isSoundOn()?CrazyToaster.textures.sound_on:CrazyToaster.textures.sound_off,
@@ -138,14 +138,6 @@ public class EndScreen {
                     rectRestart.y);
         }
 
-        if (!playState.isNEW_RECORD()) {
-            bitmapFontBestScore.getData().setScale(0.3f);
-            bitmapFontBestScore.draw(batch, "BEST: " + playState.getBEST_SCORE(), 0, camera.unproject(new Vector3(0,0,0)).y - LevelManager.LEVEL_GAP/3f - 32,CrazyToaster.WIDTH, Align.center,true);
-        }
-        else {
-            bitmapFontBestScore.getData().setScale(0.6f);
-            bitmapFontBestScore.draw(batch, "NEW BEST!", 0, camera.unproject(new Vector3(0,0,0)).y - LevelManager.LEVEL_GAP/3f - 32,CrazyToaster.WIDTH, Align.center,true);
-        }
         batch.end();
 
         toasterAnim.update(Gdx.graphics.getDeltaTime());
@@ -154,21 +146,5 @@ public class EndScreen {
     public void dispose() {
         bitmapFontScore.dispose();
         bitmapFontBestScore.dispose();
-    }
-
-    public void setEndToasterTexture() {
-        if(playState.isNEW_RECORD()) {
-            toasterAnim = new Animation(new TextureRegion(CrazyToaster.textures.winner_toaster),
-                    8, 0.5f);
-        } else {
-            if(playState.isCRASHED()) {
-                toasterAnim = new Animation(new TextureRegion(CrazyToaster.textures.crashed_toaster),
-                        4, 0.5f);
-            }
-            else {
-                toasterAnim = new Animation(new TextureRegion(CrazyToaster.textures.exploded_toaster),
-                        4, 0.5f);
-            }
-        }
     }
 }

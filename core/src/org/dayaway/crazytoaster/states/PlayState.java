@@ -9,9 +9,10 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import org.dayaway.crazytoaster.CrazyToaster;
+import org.dayaway.crazytoaster.levelApi.LevelCollection;
+import org.dayaway.crazytoaster.levelApi.LevelStatic;
 import org.dayaway.crazytoaster.sprites.level.LevelManager;
 import org.dayaway.crazytoaster.sprites.Toast;
-import org.dayaway.crazytoaster.utill.ActionAd;
 
 public class PlayState extends State {
 
@@ -20,31 +21,37 @@ public class PlayState extends State {
     private boolean NEW_RECORD = false;
 
     private final LevelManager levelManager;
+    private final LevelStatic levelStatic;
     private final Toast toast;
     private final BitmapFont bitmapFontScore;
     private int SCORE = 0;
     private boolean START = false;
     private boolean GAME_OVER = false;
+    private boolean WINNER = false;
     private int BEST_SCORE;
     private final Preferences pref;
 
-    private final ActionAd actionAd;
-
     private final GlyphLayout glyphLayout =  new GlyphLayout();
 
-    public final FirstScreen firstScreen;
+    private final FirstScreen firstScreen;
     private final EndScreen endScreen;
+    private final WinStaticScreen winStaticScreen;
 
     private boolean blink;
     private long startBlinkTime;
 
-    public PlayState(GameStateManager gsm, ActionAd actionAd) {
+    public PlayState(GameStateManager gsm) {
         super(gsm);
-        this.actionAd = actionAd;
+        //Устанавливаем камеру вниз, что бы не возникали артифакты верхних платформ на FirstScreen
+        if(gsm.isFirstScreen()) {
+            camera.position.y = -CrazyToaster.HEIGHT / 1.5f + CrazyToaster.HEIGHT / 8f;
+        }
+
         bitmapFontScore = new BitmapFont(Gdx.files.internal("wet.fnt"));
         bitmapFontScore.getData().setScale(0.8f);
 
         levelManager = new LevelManager(this);
+        levelStatic = null;
         toast = new Toast(levelManager, this);
 
         pref = Gdx.app.getPreferences("crazy toaster preferences");
@@ -52,11 +59,40 @@ public class PlayState extends State {
 
         firstScreen = new FirstScreen(this);
         endScreen = new EndScreen(this);
+        winStaticScreen = new WinStaticScreen(this);
 
         if(!gsm.isFirstScreen()) {
             START = true;
         }
     }
+
+    public PlayState(GameStateManager gsm, LevelStatic levelStatic) {
+        super(gsm);
+        //Устанавливаем камеру вниз, что бы не возникали артифакты верхних платформ на FirstScreen
+        if(gsm.isFirstScreen()) {
+            camera.position.y = -CrazyToaster.HEIGHT / 1.5f + CrazyToaster.HEIGHT / 8f;
+        }
+
+        bitmapFontScore = new BitmapFont(Gdx.files.internal("wet.fnt"));
+        bitmapFontScore.getData().setScale(0.8f);
+
+        levelManager = new LevelManager(this, levelStatic);
+        this.levelStatic = levelStatic;
+        toast = new Toast(levelManager, this);
+
+        pref = Gdx.app.getPreferences("crazy toaster preferences");
+        BEST_SCORE = pref.getInteger("highscore");
+
+        firstScreen = new FirstScreen(this);
+        endScreen = new EndScreen(this);
+        winStaticScreen = new WinStaticScreen(this);
+
+        if(!gsm.isFirstScreen()) {
+            START = true;
+        }
+    }
+
+
 
     @Override
     protected void handleInput() {
@@ -85,6 +121,9 @@ public class PlayState extends State {
         if(GAME_OVER) {
             endScreen.handleInput();
         }
+        if(WINNER) {
+            winStaticScreen.handleInput();
+        }
 
     }
 
@@ -94,7 +133,7 @@ public class PlayState extends State {
         if(START) {
             toast.update(dt);
         }
-        if(!GAME_OVER) {
+        if(!GAME_OVER && !WINNER) {
             levelManager.update(dt);
         }
 
@@ -110,7 +149,7 @@ public class PlayState extends State {
             }
         }
 
-        if(SCORE > BEST_SCORE) {
+        if(SCORE > BEST_SCORE && levelStatic == null) {
             pref.putInteger("highscore", SCORE);
             pref.flush();
             BEST_SCORE = SCORE;
@@ -121,7 +160,7 @@ public class PlayState extends State {
             START = false;
 
             if(gsm.getLoss() == 3) {
-                actionAd.showAd();
+                gsm.showAd();
                 gsm.restLoss();
             }
 
@@ -175,8 +214,6 @@ public class PlayState extends State {
             glyphLayout.setText(bitmapFontScore, String.valueOf(SCORE));
             bitmapFontScore.draw(batch, String.valueOf(SCORE), camera.position.x - glyphLayout.width / 2f,
                     camera.position.y + glyphLayout.height*1.5f + camera.viewportHeight/2f - 112);
-
-
         }
 
         if(gsm.isFirstScreen()) {
@@ -188,17 +225,21 @@ public class PlayState extends State {
             endScreen.render(batch);
         }
 
+        if(WINNER){
+            winStaticScreen.render(batch);
+        }
+
 
     }
-
-
 
     @Override
     public void dispose() {
         levelManager.dispose();
         toast.dispose();
         bitmapFontScore.dispose();
+        firstScreen.dispose();
         endScreen.dispose();
+        winStaticScreen.dispose();
     }
 
     @Override
@@ -232,9 +273,16 @@ public class PlayState extends State {
 
     //Update этого класса все равно продолжается после этого метода
     public void RETURN_GAME() {
-        gsm.set(new PlayState(gsm, actionAd));
-        gsm.incrementLoss();
-        gsm.resetCheckReward();
+        if(levelStatic != null) {
+            gsm.set(new PlayState(gsm, levelStatic));
+            gsm.incrementLoss();
+            gsm.resetCheckReward();
+        }
+        else {
+            gsm.set(new PlayState(gsm));
+            gsm.incrementLoss();
+            gsm.resetCheckReward();
+        }
     }
 
     public boolean isGAME_OVER() {
@@ -282,10 +330,6 @@ public class PlayState extends State {
         return BEST_SCORE;
     }
 
-    public void showRewazrdAd() {
-        actionAd.showRewardAd();
-    }
-
     public void blink() {
         this.blink = true;
         startBlinkTime = System.currentTimeMillis();
@@ -314,5 +358,19 @@ public class PlayState extends State {
 
     public boolean isNEW_RECORD() {
         return NEW_RECORD;
+    }
+
+    public LevelStatic getLevelStatic() {
+        return levelStatic;
+    }
+
+    public void win() {
+        this.START = false;
+        this.WINNER = true;
+        this.levelStatic.ending();
+        //Открываем следующий уровень
+        if(levelStatic.getId() + 1 < LevelCollection.getInstance().get().size()) {
+            LevelCollection.getInstance().get().get(levelStatic.getId() + 1).open();
+        }
     }
 }

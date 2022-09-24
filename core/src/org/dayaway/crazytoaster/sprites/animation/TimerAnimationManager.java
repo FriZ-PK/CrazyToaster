@@ -24,7 +24,7 @@ public class TimerAnimationManager {
 
     public TimerAnimationManager(PlayState playState) {
         this.playState = playState;
-        timerAnim = new Animation(new TextureRegion(CrazyToaster.textures.timer), 20,10f);
+        timerAnim = new Animation(new TextureRegion(CrazyToaster.textures.timer), 20,8f);
     }
 
     public void update(float dt) {

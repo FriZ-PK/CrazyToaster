@@ -17,7 +17,7 @@ public class Toast {
     private final int SPEED_FALL = -250;
 
     private long TIME_SINCE_CAPTURE;
-    private long COOKING_TIME = 10000;
+    private long COOKING_TIME = 8000;
     private long COOKING_TIME_DECREMENTING = 0;
 
     //ФАКТИЧЕСКАЯ ВЫСОТА ТОСТА
@@ -49,7 +49,7 @@ public class Toast {
         this.levelManager = levelManager;
         this.position = new Vector3(toaster.getPosition());
 
-        this.rectanglePosition = new Rectangle(position.x + (CrazyToaster.textures.toast.getWidth() - TOAST_PHYSIC_WIDTH)/2f,position.y,
+        this.rectanglePosition = new Rectangle(position.x + (CrazyToaster.textures.toast.getRegionWidth() - TOAST_PHYSIC_WIDTH)/2f,position.y,
                 TOAST_PHYSIC_WIDTH,TOAST_PHYSIC_HEIGHT);
 
         this.velocity = new Vector3(0,0,0);
@@ -77,6 +77,7 @@ public class Toast {
                 playState.turnEXPLODED();
             }
 
+            //Градусник начинает мигать если осталась половина времени
             if(System.currentTimeMillis() - TIME_SINCE_CAPTURE > COOKING_TIME/2f && !timerAnimationManager.isBlink()) {
                 timerAnimationManager.blink();
             }
@@ -94,7 +95,7 @@ public class Toast {
                     position.add(0, velocity.y, 0);
 
                     //Если верхняя граница тоста выше верхней границы тостера + высота тостера, то тост отправляется в падение
-                    if (position.y + CrazyToaster.textures.toast.getHeight() > toaster.getPosition().y + (toaster.getToaster().getRegionHeight() * 2.5)) {
+                    if (position.y + CrazyToaster.textures.toast.getRegionHeight() > toaster.getPosition().y + (toaster.getToaster().getRegionHeight() * 2.5)) {
                         FALL = true;
                     }
 
@@ -121,9 +122,9 @@ public class Toast {
                         velocity.scl(0.6f/dt);
                         //Если упал мимо тостера то GAME OVER
                         if (position.y < levelManager.getPreviousToaster().getFloor().getPosition().y +
-                                levelManager.getPreviousToaster().getFloor().getFloor().getHeight() - 20) {
+                                levelManager.getPreviousToaster().getFloor().getFloor().getRegionHeight() - 20) {
                             position.y = levelManager.getPreviousToaster().getFloor().getPosition().y +
-                                    levelManager.getPreviousToaster().getFloor().getFloor().getHeight() - 20;
+                                    levelManager.getPreviousToaster().getFloor().getFloor().getRegionHeight() - 20;
 
                             if (!lost) {
                                 lost = true;
@@ -144,7 +145,7 @@ public class Toast {
 
         //Устанавливаем скелет тоста
         //По X позиция скелета тоста = (Ширина тоста - визическая ширина тоста)/2
-        rectanglePosition.x = position.x + (CrazyToaster.textures.toast.getWidth() - TOAST_PHYSIC_WIDTH)/2f;
+        rectanglePosition.x = position.x + (CrazyToaster.textures.toast.getRegionWidth() - TOAST_PHYSIC_WIDTH)/2f;
         //По высоте скелет тоста равен реальной высоте тоста
         rectanglePosition.y = position.y;
     }
@@ -182,9 +183,18 @@ public class Toast {
     }
 
     public void grab() {
+        //Если это проходят уровень, то нужно вовремя закончить
+        if (playState.getLevelStatic() != null) {
+            if (levelManager.getCountLevel() > playState.getLevelStatic().get().size() + 1) {
+                playState.incrementScore();
+                playState.win();
+                return;
+            }
+
+        }
         levelManager.reposition();
-        if(levelManager.getThisLevel() instanceof LevelCucumberPlatform) {
-            setCOOKING_TIME(5000);
+        if (levelManager.getThisLevel() instanceof LevelCucumberPlatform) {
+            setCOOKING_TIME(4000);
         }
         toaster.eating();
         this.CAPTURED = true;
@@ -192,7 +202,6 @@ public class Toast {
         timerAnimationManager.refresh();
         timerAnimationManager.unBlink();
         setTIME_SINCE_CAPTURE();
-        
         playState.blink();
         playState.incrementScore();
         decrementCOOKING_TIME();

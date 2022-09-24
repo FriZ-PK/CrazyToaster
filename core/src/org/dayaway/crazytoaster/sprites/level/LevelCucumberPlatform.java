@@ -19,6 +19,6 @@ public class LevelCucumberPlatform extends Level{
     @Override
     protected void dispose() {
         super.dispose();
-        playState.getToast().setCOOKING_TIME(10000);
+        playState.getToast().setCOOKING_TIME(8000);
     }
 }

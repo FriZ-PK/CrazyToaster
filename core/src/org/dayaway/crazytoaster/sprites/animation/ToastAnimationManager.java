@@ -30,10 +30,10 @@ public class ToastAnimationManager {
 
     public void setAnimation() {
         if(!toast.isLost()) {
-            animation = new Animation(new TextureRegion(CrazyToaster.textures.toast_rotate), 4,0.2f);
+            animation = new Animation(CrazyToaster.textures.toast_rotate, 4,0.2f);
         }
         else {
-            animation = new Animation(new TextureRegion(CrazyToaster.textures.toast_fall), 4,0.01f);
+            animation = new Animation(CrazyToaster.textures.toast_fall, 4,0.01f);
         }
 
     }

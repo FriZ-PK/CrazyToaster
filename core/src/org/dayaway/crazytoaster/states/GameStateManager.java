@@ -1,10 +1,23 @@
 package org.dayaway.crazytoaster.states;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import org.dayaway.crazytoaster.CrazyToaster;
+import org.dayaway.crazytoaster.utill.ActionAd;
 
 import java.util.Stack;
 
 public class GameStateManager {
+
+    private Camera camera = new OrthographicCamera();
+
+    private Viewport viewport = new ExtendViewport(CrazyToaster.WIDTH,CrazyToaster.HEIGHT,camera);
+
+    private ActionAd actionAd;
 
     private final Stack<State> states;
 
@@ -18,8 +31,10 @@ public class GameStateManager {
 
     private boolean isSoundOn = true;
 
-    public GameStateManager() {
+
+    public GameStateManager(ActionAd actionAd) {
         states = new Stack<>();
+        this.actionAd = actionAd;
     }
 
     public void push(State state) {
@@ -88,7 +103,7 @@ public class GameStateManager {
     }
 
     public void turnFirstScreen() {
-        firstScreen = false;
+        firstScreen = !firstScreen;
     }
 
     public void turnSound() {
@@ -97,5 +112,22 @@ public class GameStateManager {
 
     public boolean isSoundOn() {
         return isSoundOn;
+    }
+
+
+    public void showAd() {
+        actionAd.showAd();
+    }
+
+    public void showRewardAd() {
+        actionAd.showRewardAd();
+    }
+
+    public Camera getCamera() {
+        return this.camera;
+    }
+
+    public Viewport getViewport() {
+        return this.viewport;
     }
 }

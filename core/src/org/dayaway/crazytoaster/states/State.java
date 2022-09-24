@@ -1,5 +1,6 @@
 package org.dayaway.crazytoaster.states;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -9,12 +10,14 @@ import org.dayaway.crazytoaster.CrazyToaster;
 
 public abstract class State {
 
-    protected static OrthographicCamera camera = new OrthographicCamera();
-    protected static Viewport viewport = new ExtendViewport(CrazyToaster.WIDTH,CrazyToaster.HEIGHT,camera);
+    protected Camera camera;
+    protected Viewport viewport;
     protected GameStateManager gsm;
 
     public State (GameStateManager gsm) {
         this.gsm = gsm;
+        this.camera = gsm.getCamera();
+        this.viewport = gsm.getViewport();
     }
 
     protected abstract void handleInput();

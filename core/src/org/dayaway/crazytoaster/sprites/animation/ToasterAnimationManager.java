@@ -52,18 +52,18 @@ public class ToasterAnimationManager {
     public void setDirection() {
         //Если пустой тостер
         if(!toaster.isFull()) {
-            toasterAnimation = new Animation(new TextureRegion(toaster.getDirection()? pack.getEmptyToasterRight():pack.getEmptyToasterLeft()),
+            toasterAnimation = new Animation(toaster.getDirection() ? pack.getEmptyToasterRight():pack.getEmptyToasterLeft(),
                     8, 0.5f);
         }
         //Если с едой
         else {
-            toasterAnimation = new Animation(new TextureRegion(toaster.getDirection()? pack.getFullToasterRight(): pack.getFullToasterLeft()),
+            toasterAnimation = new Animation(toaster.getDirection() ? pack.getFullToasterRight(): pack.getFullToasterLeft(),
                     8, 0.5f);
         }
     }
 
     public void eating() {
-        toasterAnimation = new Animation(new TextureRegion(toaster.getDirection()? pack.getEatingToasterRight(): pack.getEatingToasterLeft()),
+        toasterAnimation = new Animation(toaster.getDirection() ? pack.getEatingToasterRight(): pack.getEatingToasterLeft(),
                 9, 0.5f);
     }
 }

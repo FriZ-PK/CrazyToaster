@@ -39,8 +39,8 @@ public class Toaster {
         }
         tam = new ToasterAnimationManager(this, pack);
 
-        int x = (int) (rand.nextInt((floor.getFloor().getWidth() - tam.getFrame().getRegionWidth()) + 1) + floor.getPosition().x);
-        position = new Vector3(x, floor.getPosition().y + floor.getFloor().getHeight() - 20, 0);
+        int x = (int) (rand.nextInt((floor.getFloor().getRegionWidth() - tam.getFrame().getRegionWidth()) + 1) + floor.getPosition().x);
+        position = new Vector3(x, floor.getPosition().y + floor.getFloor().getRegionHeight() - 20, 0);
 
         rectanglePosition = new Rectangle(x + (tam.getFrame().getRegionWidth() - Toast.TOAST_PHYSIC_WIDTH)/2f,position.y,
                 Toast.TOAST_PHYSIC_WIDTH, tam.getFrame().getRegionHeight()/2f);
@@ -56,15 +56,15 @@ public class Toaster {
         velocity.scl(dt);
         position.add(velocity.x, 0, 0);
 
-        position.y = floor.getPosition().y + floor.getFloor().getHeight() - 20;
+        position.y = floor.getPosition().y + floor.getFloor().getRegionHeight() - 20;
 
         if (position.x < floor.getPosition().x) {
             SPEED *= -1;
             position.x = floor.getPosition().x;
             tam.setDirection();
-        } else if (position.x + tam.getFrame().getRegionWidth() > floor.getPosition().x + floor.getFloor().getWidth()) {
+        } else if (position.x + tam.getFrame().getRegionWidth() > floor.getPosition().x + floor.getFloor().getRegionWidth()) {
             SPEED *= -1;
-            position.x = floor.getPosition().x + floor.getFloor().getWidth() - tam.getFrame().getRegionWidth();
+            position.x = floor.getPosition().x + floor.getFloor().getRegionWidth() - tam.getFrame().getRegionWidth();
             tam.setDirection();
         }
         rectanglePosition.x = position.x + (tam.getFrame().getRegionWidth() - Toast.TOAST_PHYSIC_WIDTH)/2f;
@@ -107,6 +107,11 @@ public class Toaster {
     //True - RIGHT_MOVE
     //False - LEFT_MOVE
     public boolean getDirection() {
+        //Если это одиночная платформа, то скорость всегда будет равно 0 и нужно направление рандомить
+        if(getFloor().isOne()) {
+            return  rand.nextBoolean();
+        }
+
         return SPEED > 0;
     }
 
