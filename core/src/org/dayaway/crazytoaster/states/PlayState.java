@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.dayaway.crazytoaster.CrazyToaster;
 import org.dayaway.crazytoaster.levelApi.LevelCollection;
 import org.dayaway.crazytoaster.levelApi.LevelStatic;
+import org.dayaway.crazytoaster.sprites.Toaster;
 import org.dayaway.crazytoaster.sprites.level.LevelManager;
 import org.dayaway.crazytoaster.sprites.Toast;
 
@@ -40,6 +41,34 @@ public class PlayState extends State {
     private boolean blink;
     private long startBlinkTime;
 
+    //Конструктор бесконечной игры с тостером из главного экрана
+    public PlayState(GameStateManager gsm, Toaster toaster) {
+        super(gsm);
+        //Устанавливаем камеру вниз, что бы не возникали артифакты верхних платформ на FirstScreen
+        if(gsm.isFirstScreen()) {
+            camera.position.y = -CrazyToaster.HEIGHT / 1.5f + CrazyToaster.HEIGHT / 8f;
+        }
+
+        bitmapFontScore = new BitmapFont(Gdx.files.internal("wet.fnt"));
+        bitmapFontScore.getData().setScale(0.8f);
+
+        levelManager = new LevelManager(this, toaster);
+        levelStatic = null;
+        toast = new Toast(levelManager, this);
+
+        pref = Gdx.app.getPreferences("crazy toaster preferences");
+        BEST_SCORE = pref.getInteger("highscore");
+
+        firstScreen = new FirstScreen(this);
+        endScreen = new EndScreen(this);
+        winStaticScreen = new WinStaticScreen(this);
+
+        if(!gsm.isFirstScreen()) {
+            START = true;
+        }
+    }
+
+    //Конструктор бесконечной игры при перезапуске
     public PlayState(GameStateManager gsm) {
         super(gsm);
         //Устанавливаем камеру вниз, что бы не возникали артифакты верхних платформ на FirstScreen
@@ -138,7 +167,6 @@ public class PlayState extends State {
         }
 
         if(!gsm.isFirstScreen()) {
-
             //Если тост выше следующего тостера, камера останавливается
             if (toast.getPosition().y > levelManager.getFocusToaster().getPosition().y) {
                 camera.position.y = levelManager.getFocusToaster().getPosition().y + LevelManager.LEVEL_GAP + 24;
@@ -183,7 +211,6 @@ public class PlayState extends State {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-
         Gdx.gl.glClearColor(247, 215, 116, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -199,10 +226,8 @@ public class PlayState extends State {
             //Рисует очки
             if(!blink) {
                 bitmapFontScore.getData().setScale(0.8f);
-
             }
             else {
-
                 bitmapFontScore.getData().setScale(1f);
 
                 if((System.currentTimeMillis() - startBlinkTime)/1000.0 > 0.15) {
@@ -229,7 +254,6 @@ public class PlayState extends State {
             winStaticScreen.render(batch);
         }
 
-
     }
 
     @Override
@@ -244,27 +268,6 @@ public class PlayState extends State {
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height);
-        //Устанавливает камеру по центру экрана
-        camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2,0);
-
-
-        //Соотношение сторон для нахождения левой и правой границы
-        float ratioForWidth = (float) width / height;
-        float viewportWidth = CrazyToaster.HEIGHT * ratioForWidth;
-
-        float ratioForHeight = (float) height / width;
-        float viewportHeight = CrazyToaster.WIDTH * ratioForHeight;
-
-        //Тут мы получаем границы камеры слева и справа
-        CrazyToaster.LEFT = (CrazyToaster.WIDTH - viewportWidth) / 2f;
-        CrazyToaster.RIGHT = CrazyToaster.LEFT + viewportWidth;
-        CrazyToaster.WIDTH_SCREEN = CrazyToaster.RIGHT - CrazyToaster.LEFT;
-
-        //Тут мы получаем границы камеры сверху и снизу
-        CrazyToaster.BOTTOM = (CrazyToaster.HEIGHT - viewportHeight) / 2f;
-        CrazyToaster.TOP = CrazyToaster.BOTTOM + viewportHeight;
-        CrazyToaster.HEIGHT_SCREEN = CrazyToaster.TOP - CrazyToaster.BOTTOM;
     }
 
     public void incrementScore(){

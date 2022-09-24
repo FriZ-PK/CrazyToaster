@@ -13,11 +13,11 @@ import java.util.Stack;
 
 public class GameStateManager {
 
-    private Camera camera = new OrthographicCamera();
+    private final Camera camera = new OrthographicCamera();
 
-    private Viewport viewport = new ExtendViewport(CrazyToaster.WIDTH,CrazyToaster.HEIGHT,camera);
+    private final Viewport viewport = new ExtendViewport(CrazyToaster.WIDTH,CrazyToaster.HEIGHT,camera);
 
-    private ActionAd actionAd;
+    private final ActionAd actionAd;
 
     private final Stack<State> states;
 

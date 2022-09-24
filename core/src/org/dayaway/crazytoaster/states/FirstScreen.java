@@ -31,20 +31,28 @@ public class FirstScreen {
     private final Vector3 velocityCamera;
 
     private final Rectangle sound_button;
-    private final Rectangle mosPos = new Rectangle(0,0,1,1);
+    private final Rectangle start_button;
+    private final Rectangle back_button;
 
-    private final Animation toasterAnim;
+    private final Rectangle mosPos = new Rectangle(0,0,1,1);
 
     private boolean activated = false;
     private boolean stage2 = false;
 
     private final int SPEED = 800;
 
+    //Переменная введена для плавности камеры при бесконечной игре(Без этого все как то резко происходит при нажатии из главного меню)
+    private long time_before_start = 0;
+
 
     public FirstScreen(PlayState playState) {
         this.levelManager = playState.getLevelManager();
         this.playState = playState;
         this.gsm = playState.getGSM();
+
+        if(playState.getLevelStatic() == null) {
+            time_before_start = System.currentTimeMillis();
+        }
 
         levelInd = new BitmapFont(Gdx.files.internal("wet.fnt"));
         levelInd.getData().setScale(0.8f);
@@ -59,9 +67,18 @@ public class FirstScreen {
         this.camera = playState.getCamera();
 
         floorPos.y = -CrazyToaster.HEIGHT/1.5f;
-        toasterAnim = new Animation(new TextureRegion(CrazyToaster.textures.standardToasterPack.getFullToasterLeft()), 8, 0.5f);
         sound_button = new Rectangle(0, 0,
                 CrazyToaster.textures.sound_on.getRegionWidth(),CrazyToaster.textures.sound_on.getRegionHeight());
+
+        start_button = new Rectangle(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth() / 2f,
+                floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 2f,
+                CrazyToaster.textures.startButton.getRegionWidth(),
+                CrazyToaster.textures.startButton.getRegionHeight());
+
+        back_button = new Rectangle(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth() / 2f,
+                floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 3.3f,
+                CrazyToaster.textures.startButton.getRegionWidth(),
+                CrazyToaster.textures.startButton.getRegionHeight());
     }
 
     public void handleInput() {
@@ -74,17 +91,22 @@ public class FirstScreen {
             }
             gsm.turnSound();
         }
-        else {
+        else if(mosPos.overlaps(start_button)) {
             if (gsm.isSoundOn()) {
                 CrazyToaster.textures.button_sound.play();
             }
             active();
         }
+        else if(mosPos.overlaps(back_button)) {
+            if (gsm.isSoundOn()) {
+                CrazyToaster.textures.button_sound.play();
+            }
+            gsm.push(new LevelCollectionState(gsm));
+        }
     }
 
     public void render(SpriteBatch batch) {
         if(!activated) {
-            camera.position.y = floorPos.y + CrazyToaster.HEIGHT/8f;
             titlePos.y = floorPos.y + LevelManager.LEVEL_GAP;
             floorPos.x = camera.position.x - CrazyToaster.textures.floor_five.getRegionWidth()/2f;
 
@@ -107,8 +129,15 @@ public class FirstScreen {
                         titlePos.y);
             }
 
-            batch.draw(CrazyToaster.textures.startButton, camera.position.x - CrazyToaster.textures.startButton.getRegionWidth()/2f,
-                    floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 2f);
+            if(playState.getLevelStatic() != null) {
+                start_button.setPosition(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth() / 2f,
+                        floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 2f);
+                batch.draw(CrazyToaster.textures.startButton, start_button.x, start_button.y);
+
+                back_button.setPosition(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth() / 2f,
+                        floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 3.3f);
+                batch.draw(CrazyToaster.textures.startButton, back_button.x, back_button.y);
+            }
         }
         else {
             batch.draw(CrazyToaster.textures.floor_five, floorPos.x, floorPos.y);
@@ -156,7 +185,11 @@ public class FirstScreen {
 
         }
 
-        toasterAnim.update(Gdx.graphics.getDeltaTime());
+        if(playState.getLevelStatic() == null) {
+            if((System.currentTimeMillis() - time_before_start) > 100) {
+                active();
+            }
+        }
     }
 
     public void dispose() {

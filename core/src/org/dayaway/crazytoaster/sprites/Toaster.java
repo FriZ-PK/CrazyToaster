@@ -157,4 +157,17 @@ public class Toaster {
         this.full = true;
         tam.setDirection();
     }
+
+    public Toaster setFirstPlatformOnEndlessGame() {
+        if(SPEED > 0) {
+            position.x -= 2;
+        }
+        else {
+            position.x += 2;
+        }
+
+        position.y = floor.getFloor().getRegionHeight() - 20;
+        floor.setFirstPlatformOnEndlessGame();
+        return this;
+    }
 }

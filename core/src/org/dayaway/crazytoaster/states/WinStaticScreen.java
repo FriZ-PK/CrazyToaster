@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
 import org.dayaway.crazytoaster.CrazyToaster;
+import org.dayaway.crazytoaster.levelApi.LevelCollection;
 import org.dayaway.crazytoaster.sprites.animation.Animation;
 import org.dayaway.crazytoaster.sprites.level.LevelManager;
 
@@ -73,7 +74,10 @@ public class WinStaticScreen {
                 if(gsm.isSoundOn()) {
                     CrazyToaster.textures.button_sound.play();
                 }
-                gsm.showRewardAd();
+                gsm.turnFirstScreen();
+                //Следующий уровень
+                gsm.push(new PlayState(gsm, LevelCollection.getInstance().get().get(
+                        playState.getLevelStatic().getId() + 1)));
             }
             if(sound_button.overlaps(mosPos)) {
                 if(!gsm.isSoundOn()) {
@@ -98,7 +102,6 @@ public class WinStaticScreen {
 
         batch.begin();
 
-
         batch.draw(CrazyToaster.textures.floor_three, camera.position.x - CrazyToaster.textures.floor_three.getRegionWidth()/2f, camera.position.y + 96);
 
         batch.draw(toasterAnim.getFrame(), camera.position.x - toasterAnim.getFrame().getRegionWidth()/2f,
@@ -114,29 +117,14 @@ public class WinStaticScreen {
         batch.draw(gsm.isSoundOn()?CrazyToaster.textures.sound_on:CrazyToaster.textures.sound_off,
                 sound_button.x,sound_button.y);
 
-        //Если еще не смотрели рекламу за вторую попытку рисует две кнопки
-        if(!gsm.isCheckedReward()) {
 
+        rectRestart.setPosition(camera.position.x - CrazyToaster.textures.restartButton.getRegionWidth()/2f,
+                camera.position.y - 80);
+        rectRewardAd.setPosition(camera.position.x - CrazyToaster.textures.rewardAdButton.getRegionWidth()/2f,
+                camera.position.y - 210);
 
-            rectRestart.setPosition(camera.position.x - CrazyToaster.textures.restartButton.getRegionWidth()/2f,
-                    camera.position.y - 80);
-            rectRewardAd.setPosition(camera.position.x - CrazyToaster.textures.rewardAdButton.getRegionWidth()/2f,
-                    camera.position.y - 210);
-
-            batch.draw(CrazyToaster.textures.restartButton, rectRestart.x, rectRestart.y);
-            bitmapFontContinue.draw(batch, "CONTINUE",
-                    0, rectRewardAd.y + 110,
-                    CrazyToaster.WIDTH, Align.center,true);
-            batch.draw(CrazyToaster.textures.rewardAdButton, rectRewardAd.x, rectRewardAd.y);
-        }
-        //Если уже посмотрели рекламу за вторую попытку рисует только рестарт
-        else {
-            rectRestart.setPosition(camera.position.x - CrazyToaster.textures.restartButton.getRegionWidth()/2f,
-                    camera.position.y - 100);
-
-            batch.draw(CrazyToaster.textures.restartButton, rectRestart.x,
-                    rectRestart.y);
-        }
+        batch.draw(CrazyToaster.textures.restartButton, rectRestart.x, rectRestart.y);
+        batch.draw(CrazyToaster.textures.rewardAdButton, rectRewardAd.x, rectRewardAd.y);
 
         batch.end();
 

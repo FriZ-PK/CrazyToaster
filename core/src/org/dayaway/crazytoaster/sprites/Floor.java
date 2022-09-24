@@ -78,4 +78,8 @@ public class Floor {
     public boolean isOne() {
         return one;
     }
+
+    public void setFirstPlatformOnEndlessGame() {
+        position.y = 0;
+    }
 }

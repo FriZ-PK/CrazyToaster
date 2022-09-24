@@ -25,6 +25,10 @@ public class LevelCollectionState extends State{
 
     private final List<Rectangle> rectLev;
 
+    private final Rectangle back_button;
+
+    private final Rectangle sound_button;
+
     private final Rectangle mosPos = new Rectangle(0,0,1,1);
 
     public LevelCollectionState(GameStateManager gsm) {
@@ -39,10 +43,15 @@ public class LevelCollectionState extends State{
             rectLev.add(new Rectangle(0,0,64,64));
         }
 
-        //Устанавливает камеру по центру экрана
-        camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2,0);
-
         setLevelPositions();
+
+        back_button = new Rectangle(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth()/2f,
+                rectLev.get(rectLev.size()-1).y - 150,
+                CrazyToaster.textures.startButton.getRegionWidth(),
+                CrazyToaster.textures.startButton.getRegionHeight());
+
+        sound_button = new Rectangle(0, camera.position.y + camera.viewportHeight/2f - CrazyToaster.textures.sound_on.getRegionHeight(),
+                CrazyToaster.textures.sound_on.getRegionWidth(),CrazyToaster.textures.sound_on.getRegionHeight());
     }
 
     @Override
@@ -51,13 +60,33 @@ public class LevelCollectionState extends State{
         mosPos.setPosition(tmpMosPos.x, tmpMosPos.y);
 
         if(Gdx.input.justTouched()) {
-            for (int i = 0; i < rectLev.size(); i++) {
-                if(rectLev.get(i).overlaps(mosPos)) {
+            //Если нажали на кнопку НАЗАД
+            if(mosPos.overlaps(back_button)) {
+                if (gsm.isSoundOn()) {
+                    CrazyToaster.textures.button_sound.play();
+                }
+                gsm.push(new StartPageState(gsm));
+            }
+            //Если нажали на кнопку ЗВУКА
+            else if(sound_button.overlaps(mosPos)) {
+                if(!gsm.isSoundOn()) {
+                    CrazyToaster.textures.button_sound.play();
+                }
+                gsm.turnSound();
+            }
+            //Если ты на что то другое
+            else {
+                for (int i = 0; i < rectLev.size(); i++) {
+                    if (rectLev.get(i).overlaps(mosPos)) {
 
-                    if(levelList.get(i).isOpen()) {
-                        //Тут мы получаем лист уровней который выбрали
-                        //Нужно запушить PlayStaticState в аргумент передать этот лист
-                        gsm.push(new PlayState(gsm, levelList.get(i))); //Достали уровень под индексом i
+                        if (levelList.get(i).isOpen()) {
+                            if (gsm.isSoundOn()) {
+                                CrazyToaster.textures.button_sound.play();
+                            }
+                            //Тут мы получаем лист уровней который выбрали
+                            //Нужно запушить PlayStaticState в аргумент передать этот лист
+                            gsm.push(new PlayState(gsm, levelList.get(i))); //Достали уровень под индексом i
+                        }
                     }
                 }
             }
@@ -66,9 +95,8 @@ public class LevelCollectionState extends State{
 
     @Override
     public void update(float dt) {
-        camera.position.set(camera.viewportWidth/2, camera.viewportHeight/2,0);
-
         handleInput();
+
     }
 
     @Override
@@ -83,6 +111,11 @@ public class LevelCollectionState extends State{
         batch.begin();
 
         batch.draw(CrazyToaster.textures.background, 0, camera.position.y - LevelManager.LEVEL_GAP * 2);
+
+        batch.draw(CrazyToaster.textures.startButton, back_button.x, back_button.y);
+
+        batch.draw(gsm.isSoundOn()?CrazyToaster.textures.sound_on:CrazyToaster.textures.sound_off,
+                sound_button.x,sound_button.y);
 
         drawLevelPositions(batch);
 
@@ -105,7 +138,7 @@ public class LevelCollectionState extends State{
         for (int i = 0; i < rectLev.size(); i++) {
 
             if(layer == 1) {
-                rectLev.get(i).setPosition(BORDER + ((BORDER * 2) * i) + (i * WIDTH), camera.position.y + 100);
+                rectLev.get(i).setPosition(BORDER + ((BORDER * 2) * i) + (i * WIDTH), camera.position.y + 150);
                 if(i == 3) {
                     layer = 2;
                 }
@@ -119,7 +152,7 @@ public class LevelCollectionState extends State{
             }
             else if(layer == 3) {
                 int p = (i - layer) - rectLev.size()/layer - 1;
-                rectLev.get(i).setPosition(BORDER + ((BORDER * 2) * p) + (p * WIDTH), camera.position.y - 100);
+                rectLev.get(i).setPosition(BORDER + ((BORDER * 2) * p) + (p * WIDTH), camera.position.y - 150);
                 if(i == 7) {
                     layer = 4;
                 }

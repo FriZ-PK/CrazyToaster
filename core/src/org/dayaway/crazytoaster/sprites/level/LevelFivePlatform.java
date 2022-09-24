@@ -12,4 +12,9 @@ public class LevelFivePlatform extends Level {
         super (new Toaster(new Floor(CrazyToaster.textures.floor_five, 0,levelCount * LevelManager.LEVEL_GAP),
                 150, levelCount == 0, CrazyToaster.textures.standardToasterPack));
     }
+
+    public LevelFivePlatform(int levelCount, Toaster toaster) {
+        //Инициализируем уровень тут
+        super (toaster.setFirstPlatformOnEndlessGame());
+    }
 }

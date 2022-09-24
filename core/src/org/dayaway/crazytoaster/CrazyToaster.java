@@ -8,6 +8,7 @@ import org.dayaway.crazytoaster.sprites.Textures;
 import org.dayaway.crazytoaster.states.GameStateManager;
 import org.dayaway.crazytoaster.states.PlayState;
 import org.dayaway.crazytoaster.states.StartPageState;
+import org.dayaway.crazytoaster.states.StartState;
 import org.dayaway.crazytoaster.utill.ActionAd;
 
 public class CrazyToaster extends ApplicationAdapter {
@@ -40,7 +41,7 @@ public class CrazyToaster extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		batch.maxSpritesInBatch = 12;
 		gsm = new GameStateManager(actionAd);
-		gsm.push(new StartPageState(gsm));
+		gsm.push(new StartState(gsm));
 
 	}
 

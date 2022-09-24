@@ -36,6 +36,25 @@ public class LevelManager {
 
     private long timeStartShake;
 
+    //Конструктор бесконечной игры с тостером из главного экрана
+    public LevelManager (PlayState playState, Toaster toaster) {
+        this.playState = playState;
+        this.levelStatic = null;
+
+        this.levels = new Array<>();
+
+        levels.add(new LevelFivePlatform(0,toaster));
+        countLevel++;
+
+        while (countLevel < LEVEL_COUNTS) {
+            levels.add(getLevel());
+            countLevel++;
+        }
+
+        focusLevelIndex = 0;
+        previousLevelIndex = LEVEL_COUNTS - 1;
+    }
+
     public LevelManager (PlayState playState) {
         this.playState = playState;
         this.levelStatic = null;
