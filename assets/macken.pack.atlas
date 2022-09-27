@@ -18,16 +18,23 @@ button_ad
   orig: 172, 64
   offset: 0, 0
   index: -1
-button_restart
+button_back
   rotate: false
   xy: 516, 283
   size: 172, 64
   orig: 172, 64
   offset: 0, 0
   index: -1
-button_start
+button_restart
   rotate: false
   xy: 516, 217
+  size: 172, 64
+  orig: 172, 64
+  offset: 0, 0
+  index: -1
+button_start
+  rotate: false
+  xy: 516, 151
   size: 172, 64
   orig: 172, 64
   offset: 0, 0
@@ -130,6 +137,13 @@ empty_toaster_animation_right
   orig: 512, 64
   offset: 0, 0
   index: -1
+endless_game_button
+  rotate: false
+  xy: 516, 85
+  size: 172, 64
+  orig: 172, 64
+  offset: 0, 0
+  index: -1
 exploded_toaster_animation
   rotate: false
   xy: 580, 547
@@ -165,23 +179,58 @@ full_cucumber_toaster_animation_left
   orig: 512, 64
   offset: 0, 0
   index: -1
-one_floor
-  rotate: false
-  xy: 516, 167
-  size: 106, 48
-  orig: 106, 48
-  offset: 0, 0
-  index: -1
-sound_off
+level_close
   rotate: false
   xy: 929, 776
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
+level_collection_button
+  rotate: false
+  xy: 516, 19
+  size: 172, 64
+  orig: 172, 64
+  offset: 0, 0
+  index: -1
+level_ending
+  rotate: false
+  xy: 856, 695
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+level_img
+  rotate: false
+  xy: 690, 299
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+level_open
+  rotate: false
+  xy: 690, 233
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+one_floor
+  rotate: false
+  xy: 690, 365
+  size: 106, 48
+  orig: 106, 48
+  offset: 0, 0
+  index: -1
+sound_off
+  rotate: false
+  xy: 690, 167
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 sound_on
   rotate: false
-  xy: 690, 349
+  xy: 690, 101
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -202,7 +251,7 @@ title
   index: -1
 toast
   rotate: false
-  xy: 516, 101
+  xy: 690, 35
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -219,13 +268,6 @@ toast_rotate
   xy: 516, 415
   size: 256, 64
   orig: 256, 64
-  offset: 0, 0
-  index: -1
-toaster
-  rotate: false
-  xy: 690, 283
-  size: 64, 64
-  orig: 64, 64
   offset: 0, 0
   index: -1
 

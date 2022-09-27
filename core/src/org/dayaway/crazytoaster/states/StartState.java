@@ -18,7 +18,7 @@ public class StartState extends State{
 
     @Override
     public void update(float dt) {
-        gsm.push(new StartPageState(gsm));
+        gsm.push(new PlayState(gsm));
     }
 
     @Override

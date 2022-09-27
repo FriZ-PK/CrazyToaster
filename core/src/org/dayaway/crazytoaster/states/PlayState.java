@@ -41,34 +41,7 @@ public class PlayState extends State {
     private boolean blink;
     private long startBlinkTime;
 
-    //Конструктор бесконечной игры с тостером из главного экрана
-    public PlayState(GameStateManager gsm, Toaster toaster) {
-        super(gsm);
-        //Устанавливаем камеру вниз, что бы не возникали артифакты верхних платформ на FirstScreen
-        if(gsm.isFirstScreen()) {
-            camera.position.y = -CrazyToaster.HEIGHT / 1.5f + CrazyToaster.HEIGHT / 8f;
-        }
-
-        bitmapFontScore = new BitmapFont(Gdx.files.internal("wet.fnt"));
-        bitmapFontScore.getData().setScale(0.8f);
-
-        levelManager = new LevelManager(this, toaster);
-        levelStatic = null;
-        toast = new Toast(levelManager, this);
-
-        pref = Gdx.app.getPreferences("crazy toaster preferences");
-        BEST_SCORE = pref.getInteger("highscore");
-
-        firstScreen = new FirstScreen(this);
-        endScreen = new EndScreen(this);
-        winStaticScreen = new WinStaticScreen(this);
-
-        if(!gsm.isFirstScreen()) {
-            START = true;
-        }
-    }
-
-    //Конструктор бесконечной игры при перезапуске
+    //Конструктор бесконечной игры
     public PlayState(GameStateManager gsm) {
         super(gsm);
         //Устанавливаем камеру вниз, что бы не возникали артифакты верхних платформ на FirstScreen
@@ -214,9 +187,11 @@ public class PlayState extends State {
         Gdx.gl.glClearColor(247, 215, 116, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        //Рисуем фон оключаем смешивание, это увеличивает производительность
         batch.begin();
-
+        batch.disableBlending();
         batch.draw(CrazyToaster.textures.background, 0, camera.position.y - LevelManager.LEVEL_GAP * 2);
+        batch.enableBlending();
 
         levelManager.render(batch);
         toast.render(batch);
@@ -253,7 +228,6 @@ public class PlayState extends State {
         if(WINNER){
             winStaticScreen.render(batch);
         }
-
     }
 
     @Override

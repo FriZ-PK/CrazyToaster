@@ -2,6 +2,7 @@ package org.dayaway.crazytoaster;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 
 import org.dayaway.crazytoaster.utill.ActionAd;
 
@@ -14,8 +15,8 @@ public class DesktopLauncher implements ActionAd {
 		config.setTitle(CrazyToaster.TITLE);
 		new Lwjgl3Application(new CrazyToaster(new DesktopLauncher()), config);
 
-		//УПАКОВЩИК ТЕКСТУР
-		/*TexturePacker.Settings settings=new TexturePacker.Settings();
+		/*//TEXTURE PACKER
+		TexturePacker.Settings settings=new TexturePacker.Settings();
 		settings.alias=true;
 		settings.flattenPaths=true;
 		TexturePacker.process(settings, "D:\\img\\toasters", "D:\\img\\output","macken.pack");*/

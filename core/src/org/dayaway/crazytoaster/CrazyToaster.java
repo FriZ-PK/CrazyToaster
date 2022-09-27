@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import org.dayaway.crazytoaster.sprites.Textures;
 import org.dayaway.crazytoaster.states.GameStateManager;
-import org.dayaway.crazytoaster.states.PlayState;
-import org.dayaway.crazytoaster.states.StartPageState;
 import org.dayaway.crazytoaster.states.StartState;
 import org.dayaway.crazytoaster.utill.ActionAd;
 
@@ -38,11 +36,9 @@ public class CrazyToaster extends ApplicationAdapter {
 	@Override
 	public void create () {
 		textures = new Textures();
-		batch = new SpriteBatch();
-		batch.maxSpritesInBatch = 12;
+		batch = new SpriteBatch(50);
 		gsm = new GameStateManager(actionAd);
 		gsm.push(new StartState(gsm));
-
 	}
 
 	@Override

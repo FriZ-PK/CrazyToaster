@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Align;
 import org.dayaway.crazytoaster.CrazyToaster;
 import org.dayaway.crazytoaster.levelApi.LevelCollection;
 import org.dayaway.crazytoaster.sprites.animation.Animation;
-import org.dayaway.crazytoaster.sprites.level.LevelManager;
 
 public class WinStaticScreen {
 
@@ -26,20 +25,19 @@ public class WinStaticScreen {
 
     private final BitmapFont bitmapFontScore;
     private final BitmapFont bitmapFontBestScore;
-    private final BitmapFont bitmapFontContinue;
+    private final BitmapFont text;
 
     private final ShapeRenderer shapeRenderer;
 
     private final GlyphLayout glyphLayout =  new GlyphLayout();
 
-    private final Rectangle rectRestart = new Rectangle(0,0, CrazyToaster.textures.restartButton.getRegionWidth(),CrazyToaster.textures.restartButton.getRegionHeight());
-    private final Rectangle rectRewardAd = new Rectangle(0,0,CrazyToaster.textures.rewardAdButton.getRegionWidth(),CrazyToaster.textures.rewardAdButton.getRegionHeight());
+    private final Rectangle rectNextButton = new Rectangle(0,0, CrazyToaster.textures.endlessButton.getRegionWidth(),CrazyToaster.textures.endlessButton.getRegionHeight());
+    private final Rectangle rectBackButton = new Rectangle(0,0,CrazyToaster.textures.backButton.getRegionWidth(),CrazyToaster.textures.backButton.getRegionHeight());
     private final Rectangle sound_button;
     private final Rectangle mosPos = new Rectangle(0,0,1,1);
 
     private Animation toasterAnim = new Animation(new TextureRegion(CrazyToaster.textures.winner_toaster),
             8, 0.5f);
-
 
     public WinStaticScreen(PlayState playState) {
         this.playState = playState;
@@ -50,8 +48,8 @@ public class WinStaticScreen {
         bitmapFontScore.getData().setScale(0.8f);
         bitmapFontBestScore =new BitmapFont(Gdx.files.internal("wet.fnt"));
         bitmapFontBestScore.getData().setScale(0.3f);
-        bitmapFontContinue =new BitmapFont(Gdx.files.internal("wet.fnt"));
-        bitmapFontContinue.getData().setScale(0.3f);
+        text = new BitmapFont(Gdx.files.internal("wet.fnt"));
+        text.getData().setScale(0.3f);
 
         this.shapeRenderer = new ShapeRenderer();
         sound_button = new Rectangle(0, 0,
@@ -63,18 +61,20 @@ public class WinStaticScreen {
             Vector3 tmpMosPos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             mosPos.setPosition(tmpMosPos.x, tmpMosPos.y);
 
-            if(rectRestart.overlaps(mosPos)) {
+            if(rectBackButton.overlaps(mosPos)) {
                 if(gsm.isSoundOn()) {
                     CrazyToaster.textures.button_sound.play();
                 }
                 gsm.turnFirstScreen();
+                gsm.resetCheckReward();
                 playState.getGSM().push(new LevelCollectionState(playState.getGSM()));
             }
-            if(rectRewardAd.overlaps(mosPos)) {
+            if(rectNextButton.overlaps(mosPos)) {
                 if(gsm.isSoundOn()) {
                     CrazyToaster.textures.button_sound.play();
                 }
                 gsm.turnFirstScreen();
+                gsm.resetCheckReward();
                 //Следующий уровень
                 gsm.push(new PlayState(gsm, LevelCollection.getInstance().get().get(
                         playState.getLevelStatic().getId() + 1)));
@@ -118,13 +118,18 @@ public class WinStaticScreen {
                 sound_button.x,sound_button.y);
 
 
-        rectRestart.setPosition(camera.position.x - CrazyToaster.textures.restartButton.getRegionWidth()/2f,
+        rectNextButton.setPosition(camera.position.x - CrazyToaster.textures.restartButton.getRegionWidth()/2f,
                 camera.position.y - 80);
-        rectRewardAd.setPosition(camera.position.x - CrazyToaster.textures.rewardAdButton.getRegionWidth()/2f,
-                camera.position.y - 210);
+        rectBackButton.setPosition(camera.position.x - CrazyToaster.textures.rewardAdButton.getRegionWidth()/2f,
+                camera.position.y - 180);
 
-        batch.draw(CrazyToaster.textures.restartButton, rectRestart.x, rectRestart.y);
-        batch.draw(CrazyToaster.textures.rewardAdButton, rectRewardAd.x, rectRewardAd.y);
+        batch.draw(CrazyToaster.textures.endlessButton, rectNextButton.x, rectNextButton.y);
+        glyphLayout.setText(text, "NEXT");
+        text.draw(batch, "NEXT",
+                rectNextButton.x + CrazyToaster.textures.endlessButton.getRegionWidth()/2f - glyphLayout.width/2f,
+                rectNextButton.y + glyphLayout.height * 3f);
+
+        batch.draw(CrazyToaster.textures.backButton, rectBackButton.x, rectBackButton.y);
 
         batch.end();
 
@@ -132,6 +137,7 @@ public class WinStaticScreen {
     }
 
     public void dispose() {
+        shapeRenderer.dispose();
         bitmapFontScore.dispose();
         bitmapFontBestScore.dispose();
     }

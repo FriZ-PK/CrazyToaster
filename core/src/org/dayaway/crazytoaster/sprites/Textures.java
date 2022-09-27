@@ -15,9 +15,6 @@ public class Textures {
 
     private final TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("macken.pack.atlas"));
 
-    //Временный
-    public final TextureRegion toaster = atlas.findRegion("toaster");
-
     public final TextureRegion toast = atlas.findRegion("toast");
     public final TextureRegion toast_rotate = atlas.findRegion("toast_rotate");
     public final TextureRegion floor_five = atlas.findRegion("five_floor");
@@ -35,6 +32,14 @@ public class Textures {
     public final TextureRegion title = atlas.findRegion("title");
     public final TextureRegion sound_on = atlas.findRegion("sound_on");
     public final TextureRegion sound_off = atlas.findRegion("sound_off");
+    public final TextureRegion backButton = atlas.findRegion("button_back");
+    public final TextureRegion endlessButton = atlas.findRegion("endless_game_button");
+    public final TextureRegion levelCollectButton = atlas.findRegion("level_collection_button");
+    public final TextureRegion levelEnding = atlas.findRegion("level_ending");
+    public final TextureRegion levelClose = atlas.findRegion("level_close");
+    public final TextureRegion levelImg = atlas.findRegion("level_img");
+    public final TextureRegion levelActive = atlas.findRegion("level_open");
+
     public final AnimationPack standardToasterPack = new StandardAnimationPack(atlas);
     public final AnimationPack bananaToasterPack = new BananaAnimationPack(atlas);
     public final AnimationPack cucumberToasterPack = new CucumberAnimationPack(atlas);

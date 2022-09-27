@@ -3,13 +3,12 @@ package org.dayaway.crazytoaster.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 
-import org.dayaway.crazytoaster.sprites.animation.Animation;
 import org.dayaway.crazytoaster.CrazyToaster;
 import org.dayaway.crazytoaster.sprites.level.LevelManager;
 
@@ -19,8 +18,6 @@ public class FirstScreen {
     private final PlayState playState;
     private final LevelManager levelManager;
     private final GameStateManager gsm;
-
-    private final BitmapFont levelInd;
 
     private final Vector3 titlePos;
     private final Vector3 floorPos;
@@ -34,6 +31,10 @@ public class FirstScreen {
     private final Rectangle start_button;
     private final Rectangle back_button;
 
+    private final BitmapFont levelInd;
+    private final BitmapFont text;
+    private final GlyphLayout glyphLayout;
+
     private final Rectangle mosPos = new Rectangle(0,0,1,1);
 
     private boolean activated = false;
@@ -41,18 +42,10 @@ public class FirstScreen {
 
     private final int SPEED = 800;
 
-    //Переменная введена для плавности камеры при бесконечной игре(Без этого все как то резко происходит при нажатии из главного меню)
-    private long time_before_start = 0;
-
-
     public FirstScreen(PlayState playState) {
         this.levelManager = playState.getLevelManager();
         this.playState = playState;
         this.gsm = playState.getGSM();
-
-        if(playState.getLevelStatic() == null) {
-            time_before_start = System.currentTimeMillis();
-        }
 
         levelInd = new BitmapFont(Gdx.files.internal("wet.fnt"));
         levelInd.getData().setScale(0.8f);
@@ -76,9 +69,13 @@ public class FirstScreen {
                 CrazyToaster.textures.startButton.getRegionHeight());
 
         back_button = new Rectangle(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth() / 2f,
-                floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 3.3f,
+                floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 3.4f,
                 CrazyToaster.textures.startButton.getRegionWidth(),
                 CrazyToaster.textures.startButton.getRegionHeight());
+
+        text = new BitmapFont(Gdx.files.internal("wet.fnt"));
+        text.getData().setScale(0.3f);
+        glyphLayout = new GlyphLayout();
     }
 
     public void handleInput() {
@@ -97,12 +94,15 @@ public class FirstScreen {
             }
             active();
         }
-        else if(mosPos.overlaps(back_button)) {
+
+        if(mosPos.overlaps(back_button)) {
             if (gsm.isSoundOn()) {
                 CrazyToaster.textures.button_sound.play();
             }
             gsm.push(new LevelCollectionState(gsm));
         }
+
+
     }
 
     public void render(SpriteBatch batch) {
@@ -129,14 +129,35 @@ public class FirstScreen {
                         titlePos.y);
             }
 
+            //Если проходят уровень нужно рисовать кнопку назад и старт
             if(playState.getLevelStatic() != null) {
-                start_button.setPosition(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth() / 2f,
+                start_button.setPosition(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth()/2f,
                         floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 2f);
                 batch.draw(CrazyToaster.textures.startButton, start_button.x, start_button.y);
 
-                back_button.setPosition(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth() / 2f,
-                        floorPos.y - CrazyToaster.textures.startButton.getRegionHeight() * 3.3f);
-                batch.draw(CrazyToaster.textures.startButton, back_button.x, back_button.y);
+                back_button.setPosition(camera.position.x - CrazyToaster.textures.backButton.getRegionWidth()/2f,
+                        floorPos.y - CrazyToaster.textures.backButton.getRegionHeight() * 3.4f);
+                batch.draw(CrazyToaster.textures.backButton, back_button.x, back_button.y);
+            }
+            //Если в бесконечной игре
+            else {
+                back_button.setPosition(camera.position.x - CrazyToaster.textures.levelCollectButton.getRegionWidth() - 20,
+                        floorPos.y - CrazyToaster.textures.levelCollectButton.getRegionHeight() * 2.5f);
+                batch.draw(CrazyToaster.textures.levelCollectButton, back_button.x, back_button.y);
+
+                glyphLayout.setText(text, "LEVELS");
+                text.draw(batch, "LEVELS",
+                        back_button.x + CrazyToaster.textures.levelCollectButton.getRegionWidth()/2f - glyphLayout.width/2f,
+                        back_button.y + glyphLayout.height * 3f);
+
+                start_button.setPosition(camera.position.x + 20,
+                        floorPos.y - CrazyToaster.textures.endlessButton.getRegionHeight() * 2.5f);
+                batch.draw(CrazyToaster.textures.endlessButton, start_button.x, start_button.y);
+
+                glyphLayout.setText(text, "SURVIVE");
+                text.draw(batch, "SURVIVE",
+                        start_button.x + CrazyToaster.textures.levelCollectButton.getRegionWidth()/2f - glyphLayout.width/2f,
+                        start_button.y + glyphLayout.height * 3f);
             }
         }
         else {
@@ -184,16 +205,11 @@ public class FirstScreen {
             }
 
         }
-
-        if(playState.getLevelStatic() == null) {
-            if((System.currentTimeMillis() - time_before_start) > 100) {
-                active();
-            }
-        }
     }
 
     public void dispose() {
         levelInd.dispose();
+        text.dispose();
     }
 
     public void active() {

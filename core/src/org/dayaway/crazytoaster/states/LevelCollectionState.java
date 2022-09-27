@@ -2,9 +2,12 @@ package org.dayaway.crazytoaster.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 
 import org.dayaway.crazytoaster.CrazyToaster;
 import org.dayaway.crazytoaster.levelApi.LevelCollection;
@@ -31,6 +34,9 @@ public class LevelCollectionState extends State{
 
     private final Rectangle mosPos = new Rectangle(0,0,1,1);
 
+    private final BitmapFont text;
+    private final GlyphLayout glyphLayout;
+
     public LevelCollectionState(GameStateManager gsm) {
         super(gsm);
         this.gsm = gsm;
@@ -45,13 +51,17 @@ public class LevelCollectionState extends State{
 
         setLevelPositions();
 
-        back_button = new Rectangle(camera.position.x - CrazyToaster.textures.startButton.getRegionWidth()/2f,
+        back_button = new Rectangle(camera.position.x - CrazyToaster.textures.backButton.getRegionWidth()/2f,
                 rectLev.get(rectLev.size()-1).y - 150,
-                CrazyToaster.textures.startButton.getRegionWidth(),
-                CrazyToaster.textures.startButton.getRegionHeight());
+                CrazyToaster.textures.backButton.getRegionWidth(),
+                CrazyToaster.textures.backButton.getRegionHeight());
 
         sound_button = new Rectangle(0, camera.position.y + camera.viewportHeight/2f - CrazyToaster.textures.sound_on.getRegionHeight(),
                 CrazyToaster.textures.sound_on.getRegionWidth(),CrazyToaster.textures.sound_on.getRegionHeight());
+
+        text = new BitmapFont(Gdx.files.internal("wet.fnt"));
+        text.getData().setScale(0.3f);
+        glyphLayout = new GlyphLayout();
     }
 
     @Override
@@ -65,7 +75,7 @@ public class LevelCollectionState extends State{
                 if (gsm.isSoundOn()) {
                     CrazyToaster.textures.button_sound.play();
                 }
-                gsm.push(new StartPageState(gsm));
+                gsm.push(new PlayState(gsm));
             }
             //Если нажали на кнопку ЗВУКА
             else if(sound_button.overlaps(mosPos)) {
@@ -74,7 +84,7 @@ public class LevelCollectionState extends State{
                 }
                 gsm.turnSound();
             }
-            //Если ты на что то другое
+            //Если на что то другое
             else {
                 for (int i = 0; i < rectLev.size(); i++) {
                     if (rectLev.get(i).overlaps(mosPos)) {
@@ -109,10 +119,11 @@ public class LevelCollectionState extends State{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-
+        batch.disableBlending();
         batch.draw(CrazyToaster.textures.background, 0, camera.position.y - LevelManager.LEVEL_GAP * 2);
+        batch.enableBlending();
 
-        batch.draw(CrazyToaster.textures.startButton, back_button.x, back_button.y);
+        batch.draw(CrazyToaster.textures.backButton, back_button.x, back_button.y);
 
         batch.draw(gsm.isSoundOn()?CrazyToaster.textures.sound_on:CrazyToaster.textures.sound_off,
                 sound_button.x,sound_button.y);
@@ -124,7 +135,7 @@ public class LevelCollectionState extends State{
 
     @Override
     public void dispose() {
-
+        text.dispose();
     }
 
     @Override
@@ -167,19 +178,31 @@ public class LevelCollectionState extends State{
             //Если уровень открыт
             if(levelList.get(i).isOpen()) {
 
-                //Если уровень не пройден
-                if(!levelList.get(i).isEnding()) {
-                    batch.draw(CrazyToaster.textures.toast, rectLev.get(i).x, rectLev.get(i).y);
-                }
                 //Если уровень пройден
-                else {
-                    batch.draw(CrazyToaster.textures.toast, rectLev.get(i).x, rectLev.get(i).y);
+                if(levelList.get(i).isEnding()) {
+                    batch.draw(CrazyToaster.textures.levelImg, rectLev.get(i).x, rectLev.get(i).y);
+
+                    batch.draw(CrazyToaster.textures.levelEnding, rectLev.get(i).x
+                            + (CrazyToaster.textures.levelImg.getRegionWidth() - CrazyToaster.textures.levelEnding.getRegionWidth()),
+                            rectLev.get(i).y);
                 }
+                //Если открыт но не пройден(АКТИВНЫЙ)
+                else {
+                    batch.draw(CrazyToaster.textures.levelActive, rectLev.get(i).x, rectLev.get(i).y);
+                }
+
+                //Рисуем номер уровня
+                glyphLayout.setText(text, String.valueOf(levelList.get(i).getId() + 1));
+                text.draw(batch, String.valueOf(levelList.get(i).getId() + 1),
+                        rectLev.get(i).x + 32 - glyphLayout.width/2f,
+                        rectLev.get(i).y + glyphLayout.height * 3f);
             }
             //Если уровень не открыт
             else {
-                batch.draw(CrazyToaster.textures.toaster, rectLev.get(i).x, rectLev.get(i).y);
+                batch.draw(CrazyToaster.textures.levelImg, rectLev.get(i).x, rectLev.get(i).y);
+                batch.draw(CrazyToaster.textures.levelClose, rectLev.get(i).x, rectLev.get(i).y);
             }
+
         }
     }
 }
