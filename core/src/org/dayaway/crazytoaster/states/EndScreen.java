@@ -117,7 +117,6 @@ public class EndScreen {
         batch.begin();
 
         batch.draw(CrazyToaster.textures.floor_three, camera.position.x - CrazyToaster.textures.floor_three.getRegionWidth()/2f, camera.position.y + 96);
-
         batch.draw(toasterAnim.getFrame(), camera.position.x - toasterAnim.getFrame().getRegionWidth()/2f,
                 camera.position.y + 96 + CrazyToaster.textures.floor_three.getRegionHeight() - 20);
 
@@ -126,6 +125,14 @@ public class EndScreen {
             glyphLayout.setText(bitmapFontScore, String.valueOf(playState.getSCORE()));
             bitmapFontScore.draw(batch, String.valueOf(playState.getSCORE()), camera.position.x - glyphLayout.width / 2f,
                     camera.unproject(new Vector3(0, 0, 0)).y - 32);
+
+            if (!playState.isNEW_RECORD()) {
+                bitmapFontBestScore.getData().setScale(0.3f);
+                bitmapFontBestScore.draw(batch, "BEST: " + playState.getBEST_SCORE(), 0, camera.unproject(new Vector3(0, 0, 0)).y - LevelManager.LEVEL_GAP / 3f - 32, CrazyToaster.WIDTH, Align.center, true);
+            } else {
+                bitmapFontBestScore.getData().setScale(0.6f);
+                bitmapFontBestScore.draw(batch, "NEW BEST!", 0, camera.unproject(new Vector3(0, 0, 0)).y - LevelManager.LEVEL_GAP / 3f - 32, CrazyToaster.WIDTH, Align.center, true);
+            }
         }
         //Рисует информацию в режиме прохождении уровней
         else {
@@ -153,9 +160,7 @@ public class EndScreen {
                     camera.position.y - 310);
 
             batch.draw(CrazyToaster.textures.restartButton, rectRestart.x, rectRestart.y);
-            bitmapFontContinue.draw(batch, "CONTINUE",
-                    0, rectRewardAd.y + 110,
-                    CrazyToaster.WIDTH, Align.center,true);
+            bitmapFontContinue.draw(batch, "CONTINUE",0, rectRewardAd.y + 110,CrazyToaster.WIDTH, Align.center,true);
             batch.draw(CrazyToaster.textures.rewardAdButton, rectRewardAd.x, rectRewardAd.y);
             batch.draw(CrazyToaster.textures.backButton, rectBackBut.x, rectBackBut.y);
         }
@@ -166,22 +171,10 @@ public class EndScreen {
             rectBackBut.setPosition(camera.position.x - CrazyToaster.textures.backButton.getRegionWidth()/2f,
                     camera.position.y - 200);
 
-            batch.draw(CrazyToaster.textures.restartButton, rectRestart.x,
-                    rectRestart.y);
-            batch.draw(CrazyToaster.textures.backButton, rectBackBut.x,
-                    rectBackBut.y);
+            batch.draw(CrazyToaster.textures.restartButton, rectRestart.x, rectRestart.y);
+            batch.draw(CrazyToaster.textures.backButton, rectBackBut.x, rectBackBut.y);
         }
 
-        //Рисует рекорд если бесконечная игра
-        if(playState.getLevelStatic() == null) {
-            if (!playState.isNEW_RECORD()) {
-                bitmapFontBestScore.getData().setScale(0.3f);
-                bitmapFontBestScore.draw(batch, "BEST: " + playState.getBEST_SCORE(), 0, camera.unproject(new Vector3(0, 0, 0)).y - LevelManager.LEVEL_GAP / 3f - 32, CrazyToaster.WIDTH, Align.center, true);
-            } else {
-                bitmapFontBestScore.getData().setScale(0.6f);
-                bitmapFontBestScore.draw(batch, "NEW BEST!", 0, camera.unproject(new Vector3(0, 0, 0)).y - LevelManager.LEVEL_GAP / 3f - 32, CrazyToaster.WIDTH, Align.center, true);
-            }
-        }
         batch.end();
 
         toasterAnim.update(Gdx.graphics.getDeltaTime());

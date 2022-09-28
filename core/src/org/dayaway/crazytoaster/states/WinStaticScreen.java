@@ -69,7 +69,8 @@ public class WinStaticScreen {
                 gsm.resetCheckReward();
                 playState.getGSM().push(new LevelCollectionState(playState.getGSM()));
             }
-            if(rectNextButton.overlaps(mosPos)) {
+            //Если нажали на NEXT и это не последний уровень
+            if(rectNextButton.overlaps(mosPos) && playState.getLevelStatic().getId()+1 != LevelCollection.getInstance().get().size()) {
                 if(gsm.isSoundOn()) {
                     CrazyToaster.textures.button_sound.play();
                 }
@@ -123,11 +124,15 @@ public class WinStaticScreen {
         rectBackButton.setPosition(camera.position.x - CrazyToaster.textures.rewardAdButton.getRegionWidth()/2f,
                 camera.position.y - 180);
 
-        batch.draw(CrazyToaster.textures.endlessButton, rectNextButton.x, rectNextButton.y);
-        glyphLayout.setText(text, "NEXT");
-        text.draw(batch, "NEXT",
-                rectNextButton.x + CrazyToaster.textures.endlessButton.getRegionWidth()/2f - glyphLayout.width/2f,
-                rectNextButton.y + glyphLayout.height * 3f);
+        //Если это не последний уровень(Иначе нет смысла рисовать кнопку next)
+        if(playState.getLevelStatic().getId()+1 != LevelCollection.getInstance().get().size()) {
+            batch.draw(CrazyToaster.textures.endlessButton, rectNextButton.x, rectNextButton.y);
+
+            glyphLayout.setText(text, "NEXT");
+            text.draw(batch, "NEXT",
+                    rectNextButton.x + CrazyToaster.textures.endlessButton.getRegionWidth() / 2f - glyphLayout.width / 2f,
+                    rectNextButton.y + glyphLayout.height * 3f);
+        }
 
         batch.draw(CrazyToaster.textures.backButton, rectBackButton.x, rectBackButton.y);
 

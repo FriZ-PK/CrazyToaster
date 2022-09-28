@@ -32,7 +32,7 @@ import org.dayaway.crazytoaster.utill.ActionAd;
 
 public class AndroidLauncher extends AndroidApplication implements ActionAd {
 	private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";//"ca-app-pub-5500397671621074/5320458210";
-	private static final String AD_UNIT_ID_INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712";//"ca-app-pub-5500397671621074/7103324465";
+	private static final String AD_UNIT_ID_INTERSTITIAL = "	ca-app-pub-3940256099942544/8691691433";//"ca-app-pub-5500397671621074/7103324465";
 	private static final String AD_UNIT_ID_REWARD = "ca-app-pub-3940256099942544/5224354917";//"ca-app-pub-5500397671621074/7075404302";
 
 	private RelativeLayout adContainerView;
