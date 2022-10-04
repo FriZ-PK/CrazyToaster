@@ -345,7 +345,7 @@ public class PlayState extends State {
         this.START = false;
         this.WINNER = true;
         this.levelStatic.ending();
-        //Открываем следующий уровень
+        //Открываем следующий уровень если текущий не последний
         if(levelStatic.getId() + 1 < LevelCollection.getInstance().get().size()) {
             LevelCollection.getInstance().get().get(levelStatic.getId() + 1).open();
         }

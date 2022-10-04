@@ -87,14 +87,14 @@ public class LevelCollectionState extends State{
             //Если на что то другое
             else {
                 for (int i = 0; i < rectLev.size(); i++) {
-                    if (rectLev.get(i).overlaps(mosPos)) {
 
+                    if (rectLev.get(i).overlaps(mosPos)) {
                         if (levelList.get(i).isOpen()) {
                             if (gsm.isSoundOn()) {
                                 CrazyToaster.textures.button_sound.play();
                             }
                             //Тут мы получаем лист уровней который выбрали
-                            //Нужно запушить PlayStaticState в аргумент передать этот лист
+                            //Нужно запушить PlayState и в аргумент передать этот уровень
                             gsm.push(new PlayState(gsm, levelList.get(i))); //Достали уровень под индексом i
                         }
                     }
