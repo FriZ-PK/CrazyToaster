@@ -116,7 +116,7 @@ public class GameStateManager {
 
 
     public void showAd() {
-        actionAd.showAd();
+        actionAd.showInterAd();
     }
 
     public void showRewardAd() {

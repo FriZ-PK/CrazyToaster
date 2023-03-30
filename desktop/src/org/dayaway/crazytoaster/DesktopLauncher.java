@@ -24,7 +24,7 @@ public class DesktopLauncher implements ActionAd {
 	}
 
 	@Override
-	public void showAd() {
+	public void showInterAd() {
 
 	}
 

@@ -44,6 +44,8 @@ public class Textures {
     public final AnimationPack bananaToasterPack = new BananaAnimationPack(atlas);
     public final AnimationPack cucumberToasterPack = new CucumberAnimationPack(atlas);
 
+
+
     public final Texture background = new Texture("font.png");
     public final Texture timer = new Texture("timer.png");
 
@@ -51,6 +53,10 @@ public class Textures {
     public final Sound throw_sound = Gdx.audio.newSound(Gdx.files.internal("throw_sound.wav"));
     public final Sound grab_sound = Gdx.audio.newSound(Gdx.files.internal("grab_sound.wav"));
     public final Sound smash_sound = Gdx.audio.newSound(Gdx.files.internal("smash_sound.wav"));
+
+
+    //HALLOWEEN TEXTURES
+
 
 
     public void dispose() {

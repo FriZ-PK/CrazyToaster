@@ -31,13 +31,13 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import org.dayaway.crazytoaster.utill.ActionAd;
 
 public class AndroidLauncher extends AndroidApplication implements ActionAd {
-	private static final String AD_UNIT_ID = "ca-app-pub-5500397671621074/1550391095";
-	private static final String AD_UNIT_ID_INTERSTITIAL = "ca-app-pub-5500397671621074/6419574396";
-	private static final String AD_UNIT_ID_REWARD = "ca-app-pub-5500397671621074/1905614312";
+	private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";//"ca-app-pub-5500397671621074/1550391095";
+	private static final String AD_UNIT_ID_INTERSTITIAL = "ca-app-pub-3940256099942544/8691691433";//"ca-app-pub-5500397671621074/6419574396";
+	private static final String AD_UNIT_ID_REWARD = "ca-app-pub-3940256099942544/5224354917";//"ca-app-pub-5500397671621074/1905614312";
 
 	private RelativeLayout adContainerView;
-	private AdView adView;
 
+	private AdView adView;
 	private InterstitialAd mInterstitialAd;
 	private RewardedAd mRewardedAd;
 
@@ -63,11 +63,11 @@ public class AndroidLauncher extends AndroidApplication implements ActionAd {
 		//Создаем пустой view для рекламы
 		adContainerView = new RelativeLayout(this);
 
-
 		//задаем параметры для нашего баннера
-		RelativeLayout.LayoutParams adParams =
-				new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+		RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(
+						RelativeLayout.LayoutParams.WRAP_CONTENT,
 						RelativeLayout.LayoutParams.WRAP_CONTENT);
+
 		adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		adParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
@@ -82,8 +82,6 @@ public class AndroidLauncher extends AndroidApplication implements ActionAd {
 		layout.addView(gameView);
 		//Добавляем в наш пустой View рекламный контейнер с параметрами
 		layout.addView(adContainerView, adParams);
-
-
 		//Передаем наш View на отображение
 		setContentView(layout);
 
@@ -104,6 +102,7 @@ public class AndroidLauncher extends AndroidApplication implements ActionAd {
 	private void loadBanner() {
 		adView = new AdView(this);
 		adView.setAdUnitId(AD_UNIT_ID);
+
 		adContainerView.removeAllViews();
 		adContainerView.addView(adView);
 
@@ -172,9 +171,8 @@ public class AndroidLauncher extends AndroidApplication implements ActionAd {
 				});
 	}
 
-
 	@Override
-	public void showAd() {
+	public void showInterAd() {
 		try {
 			//Запускаем в пользовательском потоке
 			runOnUiThread(new Runnable() {
